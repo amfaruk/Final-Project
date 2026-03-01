@@ -24,6 +24,7 @@ export default function Navbar() {
           <li><Link href="/about">{t.about}</Link></li>
           <li><Link href="/learnMore">{t.learnMore}</Link></li>
           <li><Link href="/login">{t.login}</Link></li>
+          
         </ul>
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>

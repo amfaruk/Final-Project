@@ -1,14 +1,335 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model airports {
+  id           Int                      @id @default(autoincrement())
+  airport_name String?                  @db.VarChar(255)
+  type         String?                  @db.VarChar(100)
+  icao_code    String?                  @db.VarChar(50)
+  iata_code    String?                  @db.VarChar(50)
+  elevation_ft Int?
+  municipality String?                  @db.VarChar(100)
+  geom         Unsupported("geometry")?
+  properties   Json?
+}
+
+model asphalt {
+  id            Int                      @id @default(autoincrement())
+  objectid      Int?
+  objid         Float?
+  linkid        String?                  @db.VarChar(50)
+  roadcode      String?                  @db.VarChar(20)
+  linkname      String?                  @db.VarChar(255)
+  linklength    Float?
+  from_location String?                  @db.VarChar(255)
+  to_location   String?                  @db.VarChar(255)
+  agency        String?                  @db.VarChar(100)
+  administer    String?                  @db.VarChar(100)
+  regionc       String?                  @db.VarChar(100)
+  region        String?                  @db.VarChar(100)
+  zone          String?                  @db.VarChar(100)
+  woreda        String?                  @db.VarChar(100)
+  surfacetyp    String?                  @db.VarChar(100)
+  munmunicipal  String?                  @db.VarChar(100)
+  roadclass     String?                  @db.VarChar(100)
+  constructy    Float?
+  constructm    String?                  @db.VarChar(100)
+  surveydir     String?                  @db.VarChar(255)
+  surveyd       String?                  @db.VarChar(100)
+  lremark       String?                  @db.VarChar(255)
+  linspcetr     String?                  @db.VarChar(100)
+  linspectrp    String?                  @db.VarChar(100)
+  elev          Float?
+  surficial_map String?                  @db.VarChar(100)
+  lots          String?                  @db.VarChar(100)
+  shape_leng    Float?
+  edited        String?                  @db.VarChar(100)
+  pre_word      String?                  @db.VarChar(100)
+  ownership     String?                  @db.VarChar(100)
+  classifi_m    String?                  @db.VarChar(100)
+  remk          String?                  @db.VarChar(100)
+  shape_le_1    Float?
+  properties    Json?
+  geom          Unsupported("geometry")?
+  created_at    DateTime?                @default(now()) @db.Timestamp(6)
+
+  @@index([geom], map: "idx_asphalt_geom", type: Gist)
+  @@index([linkid], map: "idx_asphalt_linkid")
+  @@index([objectid], map: "idx_asphalt_objectid")
+}
+
+model electric_tower {
+  id                Int                      @id @default(autoincrement())
+  tower_id          String?                  @db.VarChar(100)
+  name              String?                  @db.VarChar(255)
+  type              String?                  @db.VarChar(100)
+  voltage           String?                  @db.VarChar(50)
+  operator          String?                  @db.VarChar(100)
+  status            String?                  @db.VarChar(50)
+  construction_date DateTime?                @db.Date
+  height            Decimal?                 @db.Decimal(5, 1)
+  material          String?                  @db.VarChar(50)
+  geometry_type     String?                  @db.VarChar(50)
+  geom              Unsupported("geometry")?
+  properties        Json?
+  created_at        DateTime?                @default(now()) @db.Timestamp(6)
+  updated_at        DateTime?                @default(now()) @db.Timestamp(6)
+
+  @@index([geom], map: "idx_electric_tower_geom", type: Gist)
+}
+
+model infrastructure {
+  id         Int                      @id @default(autoincrement())
+  properties Json?
+  geom       Unsupported("geometry")?
+}
+
+model infrastructure_3d {
+  id         Int                      @id @default(autoincrement())
+  type       String                   @db.VarChar(50)
+  name       String?                  @db.VarChar(100)
+  properties Json?
+  geom       Unsupported("geometry")?
+}
+
+model mv_lines {
+  id          Int                      @id @default(autoincrement())
+  mv_id       String?                  @unique @db.VarChar(100)
+  geom        Unsupported("geometry")?
+  source_file String?
+}
+
+model power_lines {
+  id         Int                      @id @default(autoincrement())
+  properties Json?
+  geom       Unsupported("geometry")?
+}
+
+model power_lines_132 {
+  id          Int                      @id @default(autoincrement())
+  properties  Json?
+  geom        Unsupported("geometry")?
+  source_file String?
+  voltage     String?                  @db.VarChar(10)
+}
+
+model power_lines_230 {
+  id          Int                      @id @default(autoincrement())
+  properties  Json?
+  geom        Unsupported("geometry")?
+  source_file String?
+  voltage     String?                  @db.VarChar(10)
+}
+
+model power_lines_400 {
+  id          Int                      @id @default(autoincrement())
+  properties  Json?
+  geom        Unsupported("geometry")?
+  source_file String?
+  voltage     String?                  @db.VarChar(10)
+}
+
+model power_lines_500 {
+  id               Int                      @id @default(autoincrement())
+  objectid         Int?
+  name             String?                  @db.VarChar(255)
+  length_km        Float?
+  number_of_towers Int?
+  voltage_ca       Int?
+  type             String?                  @db.VarChar(100)
+  material_t       String?                  @db.VarChar(100)
+  status           String?                  @db.VarChar(100)
+  established      Float?
+  owner            String?                  @db.VarChar(100)
+  region           String?                  @db.VarChar(100)
+  enabled          Int?
+  geom             Unsupported("geometry")?
+  properties       Json?
+  created_at       DateTime?                @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?                @default(now()) @db.Timestamp(6)
+
+  @@index([geom], map: "idx_transmission_lines_geom", type: Gist)
+  @@index([name], map: "idx_transmission_lines_name")
+}
+
+model power_plants {
+  id                 Int                      @id @default(autoincrement())
+  plant_id           String?                  @db.VarChar(100)
+  name               String?                  @db.VarChar(255)
+  type               String?                  @db.VarChar(100)
+  capacity_mw        Decimal?                 @db.Decimal(10, 2)
+  operator           String?                  @db.VarChar(100)
+  status             String?                  @db.VarChar(50)
+  commissioning_date DateTime?                @db.Date
+  fuel_type          String?                  @db.VarChar(100)
+  country            String?                  @db.VarChar(100)
+  region             String?                  @db.VarChar(100)
+  city               String?                  @db.VarChar(100)
+  geometry_type      String?                  @db.VarChar(50)
+  geom               Unsupported("geometry")?
+  properties         Json?
+  created_at         DateTime?                @default(now()) @db.Timestamp(6)
+  updated_at         DateTime?                @default(now()) @db.Timestamp(6)
+
+  @@index([capacity_mw], map: "idx_power_plants_capacity")
+  @@index([geom], map: "idx_power_plants_geom", type: Gist)
+  @@index([type], map: "idx_power_plants_type")
+}
+
+model railway {
+  id         Int                      @id @default(autoincrement())
+  objectid   Int?
+  length_m   Float?
+  phase      Float?
+  geom       Unsupported("geometry")?
+  properties Json?
+  created_at DateTime?                @default(now()) @db.Timestamp(6)
+
+  @@index([geom], map: "idx_railway_geom", type: Gist)
+  @@index([objectid], map: "idx_railway_objectid")
+}
+
+model railway_substation {
+  id               Int                      @id @default(autoincrement())
+  objectid         Int?
+  station_name     String?                  @db.VarChar(255)
+  urban_population Float?
+  geom             Unsupported("geometry")?
+  properties       Json?
+  created_at       DateTime?                @default(now()) @db.Timestamp(6)
+
+  @@index([geom], map: "idx_railway_substation_geom", type: Gist)
+  @@index([station_name], map: "idx_railway_substation_name")
+}
+
+model roads {
+  id           Int                      @id @default(autoincrement())
+  objectid     Int?
+  length_km    Float?
+  region       String?                  @db.VarChar(100)
+  surface_type String?                  @db.VarChar(100)
+  road_name    String?                  @db.VarChar(255)
+  rfc_id       String?                  @db.VarChar(50)
+  f_class      String?                  @db.VarChar(50)
+  x_start      Float?
+  x_end        Float?
+  y_start      Float?
+  y_end        Float?
+  district     String?                  @db.VarChar(100)
+  tga_conn     String?                  @db.VarChar(100)
+  prop_owner   String?                  @db.VarChar(100)
+  proj_status  String?                  @db.VarChar(100)
+  imp_status   String?                  @db.VarChar(100)
+  exist_owner  String?                  @db.VarChar(100)
+  geom         Unsupported("geometry")?
+  properties   Json?
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
+}
+
+model sub_station {
+  id          Int                      @id @default(autoincrement())
+  objectid    Int?
+  name        String?                  @db.VarChar(255)
+  type        String?                  @db.VarChar(100)
+  location    String?                  @db.VarChar(255)
+  established Float?
+  status      String?                  @db.VarChar(100)
+  area_cover  Float?
+  kv          String?                  @db.VarChar(50)
+  owner       String?                  @db.VarChar(100)
+  enabled     Int?
+  geom        Unsupported("geometry")?
+  properties  Json?
+  created_at  DateTime?                @default(now()) @db.Timestamp(6)
+  updated_at  DateTime?                @default(now()) @db.Timestamp(6)
+
+  @@index([geom], map: "idx_sub_station_geom", type: Gist)
+  @@index([name], map: "idx_sub_station_name")
+}
+
+model telecom {
+  id                Int                      @id @default(autoincrement())
+  site_id           String?                  @db.VarChar(100)
+  site_name         String?                  @db.VarChar(255)
+  site_type         String?                  @db.VarChar(100)
+  operator          String?                  @db.VarChar(100)
+  technology        String?                  @db.VarChar(100)
+  status            String?                  @db.VarChar(50)
+  installation_date DateTime?                @db.Date
+  address           String?
+  city              String?                  @db.VarChar(100)
+  region            String?                  @db.VarChar(100)
+  country           String?                  @db.VarChar(100)
+  geom              Unsupported("geometry")?
+  properties        Json?
+  created_at        DateTime?                @default(now()) @db.Timestamp(6)
+  updated_at        DateTime?                @default(now()) @db.Timestamp(6)
+
+  @@index([geom], map: "idx_telecom_geom", type: Gist)
+}
+
+model transformer {
+  id             Int                      @id @default(autoincrement())
+  objectid       Int?
+  description    String?                  @db.VarChar(255)
+  transform_type String?                  @db.VarChar(255)
+  chronology     String?                  @db.VarChar(100)
+  effective_date String?                  @db.VarChar(100)
+  geom           Unsupported("geometry")?
+  properties     Json?
+  created_at     DateTime?                @default(now()) @db.Timestamp(6)
+
+  @@index([geom], map: "idx_transformer_geom", type: Gist)
+  @@index([objectid], map: "idx_transformer_objectid")
+}
+
+model user_sessions {
+  id            Int       @id @default(autoincrement())
+  user_id       Int?
+  session_token String    @unique @db.VarChar(255)
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  expires_at    DateTime  @db.Timestamp(6)
+  users         users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model users {
+  id            Int             @id @default(autoincrement())
+  full_name     String          @db.VarChar(100)
+  email         String          @unique @db.VarChar(100)
+  password      String          @db.VarChar(255)
+  role          String          @default("viewer") @db.VarChar(20)
+  is_active     Boolean?        @default(true)
+  created_at    DateTime?       @default(now()) @db.Timestamp(6)
+  last_login    DateTime?       @db.Timestamp(6)
+  password_hash String?         @db.VarChar(255)
+  user_sessions user_sessions[]
+}
+model plan_submissions {
+  id          Int      @id @default(autoincrement())
+  sector      String   // "road", "telecom", "electric"
+  name        String?
+  status      String   @default("pending")
+
+  // flexible data
+  properties  Json?
+
+  // geometry (PostGIS)
+  geom        Unsupported("geometry")?
+
+  created_by  Int
+  created_at  DateTime @default(now())
 }
