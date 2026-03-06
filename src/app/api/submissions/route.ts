@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import type { PrismaClient } from '@prisma/client';
+
+// `prisma` is exported from our helper but sometimes the TS
+// language server doesn’t see the generated models immediately.
+// we force the correct type here to avoid "property does not exist"
+// errors until the server refreshes.
+const db = prisma as PrismaClient;
 
 export async function GET() {
   // return all pending submissions for manager dashboard
-  const subs = await prisma.submission.findMany({
+  const subs = await db.submission.findMany({
     where: { status: "pending" },
     orderBy: { createdAt: "desc" },
   });
@@ -26,7 +33,7 @@ export async function POST(req: Request) {
     // persist the submission with pending status; use raw SQL for geom
     const geomText = JSON.stringify(body.geom);
 
-    const inserted: Array<{ id: number }> = await prisma.$queryRaw`
+    const inserted: Array<{ id: number }> = await db.$queryRaw`
       INSERT INTO "Submission" (sector, properties, geom, status)
       VALUES (
         ${body.sector},
@@ -43,7 +50,7 @@ export async function POST(req: Request) {
     // but you can add any of the other sector tables below.
 
     const collisionResult: Array<{ id: number; table_name: string }> =
-      await prisma.$queryRaw`
+      await db.$queryRaw`
         SELECT i.id, 'infrastructure' AS table_name
         FROM "infrastructure" i
         WHERE ST_Intersects(
@@ -56,7 +63,7 @@ export async function POST(req: Request) {
     const hasCollision = collisionResult.length > 0;
 
     if (hasCollision) {
-      await prisma.$executeRaw`
+      await db.$executeRaw`
         UPDATE "Submission"
         SET hasCollision = true
         WHERE id = ${submissionId}
@@ -64,7 +71,7 @@ export async function POST(req: Request) {
     }
 
     // simple notification record
-    await prisma.notification.create({
+    await db.notification.create({
       data: {
         submissionId,
         message: hasCollision
