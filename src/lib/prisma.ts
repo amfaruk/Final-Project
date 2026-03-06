@@ -1,10 +1,20 @@
 import { PrismaClient } from '@prisma/client';
 
+// ensure we use the binary engine rather than the new "client" engine which
+// requires additional configuration (adapter/accelerateUrl). setting this
+// environment variable prevents runtime initialization errors in development.
+if (!process.env.PRISMA_CLIENT_ENGINE_TYPE) {
+  process.env.PRISMA_CLIENT_ENGINE_TYPE = 'binary';
+}
+
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
+// provide a minimal non-empty options object so PrismaClient initializes
+// without throwing when engine type is configured. using the binary engine
+// avoids the earlier "client requires adapter or accelerateUrl" error.
 const prisma =
   globalForPrisma.prisma ||
-  new PrismaClient();
+  new PrismaClient({ engine: { type: 'binary' } });
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
