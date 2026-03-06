@@ -9,12 +9,12 @@ if (!process.env.PRISMA_CLIENT_ENGINE_TYPE) {
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// provide a minimal non-empty options object so PrismaClient initializes
-// without throwing when engine type is configured. using the binary engine
-// avoids the earlier "client requires adapter or accelerateUrl" error.
+// construct client normally; PRISMA_CLIENT_ENGINE_TYPE has already been set
+// above so the binary engine will be used and no constructor validation errors
+// should occur.
 const prisma =
   globalForPrisma.prisma ||
-  new PrismaClient({ engine: { type: 'binary' } });
+  new PrismaClient();
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
