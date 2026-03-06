@@ -30,32 +30,49 @@ export default function SectorForm() {
 
   const handleSubmit = async () => {
     console.log('submit clicked', { formData, coordinates });
+
+    if (coordinates.length === 0) {
+      alert('Coordinates are required. Please add at least one point.');
+      return;
+    }
+
+    const geomCoords =
+      config.geometry === "Point" ? coordinates[0] : coordinates;
+
     const data = {
       sector,
       properties: formData,
       geom: {
         type: config.geometry,
-        coordinates:
-          config.geometry === "Point"
-            ? coordinates[0]
-            : coordinates,
+        coordinates: geomCoords,
       },
       userId: 1,
     };
 
-    // send to new submissions endpoint which will store and run collision check
-    const res = await fetch("/api/submissions", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-    const json = await res.json();
-    console.log("submission response", json);
-    if (json.hasCollision) {
-      alert("Submission recorded – potential collision detected, manager will review.");
-    } else {
-      alert("Submission recorded – no collision found.");
+      if (!res.ok) {
+        const text = await res.text();
+        console.error('submission error', text);
+        alert('Submission failed: ' + res.status);
+        return;
+      }
+
+      const json = await res.json();
+      console.log("submission response", json);
+      if (json.hasCollision) {
+        alert("Submission recorded – potential collision detected, manager will review.");
+      } else {
+        alert("Submission recorded – no collision found.");
+      }
+    } catch (err) {
+      console.error('network error', err);
+      alert('Unable to submit – network error');
     }
   };
 
@@ -89,7 +106,16 @@ export default function SectorForm() {
       ))}
 
       <button onClick={addPoint} style={{ cursor: 'pointer' }}>Add Coordinate</button>
-      <button onClick={handleSubmit} style={{ cursor: 'pointer', marginLeft: 8 }}>Submit</button>
+      <button
+        onClick={handleSubmit}
+        disabled={coordinates.length === 0}
+        style={{
+          cursor: coordinates.length === 0 ? 'not-allowed' : 'pointer',
+          marginLeft: 8,
+        }}
+      >
+        Submit
+      </button>
     </div>
   );
 }
