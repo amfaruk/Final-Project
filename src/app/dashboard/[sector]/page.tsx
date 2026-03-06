@@ -43,10 +43,20 @@ export default function SectorForm() {
       userId: 1,
     };
 
-    await fetch("/api/plans", {
+    // send to new submissions endpoint which will store and run collision check
+    const res = await fetch("/api/submissions", {
       method: "POST",
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify(data),
     });
+
+    const json = await res.json();
+    console.log("submission response", json);
+    if (json.hasCollision) {
+      alert("Submission recorded – potential collision detected, manager will review.");
+    } else {
+      alert("Submission recorded – no collision found.");
+    }
   };
 
   return (
